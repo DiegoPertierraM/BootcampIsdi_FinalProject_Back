@@ -21,7 +21,7 @@ jobs:
       - name: Install modules
         run: npm ci
       - name: Testing coverage
-        run: npm run test:dev #Change for a valid npm script
+        run: npm run test:prod #Change for a valid npm script
         working-directory: src # The directory containing the source code
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
