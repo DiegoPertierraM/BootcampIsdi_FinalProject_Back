@@ -11,8 +11,10 @@
     "build": "tsc",
     "dev": "tsc -w",
     "test": "cross-env NODE_ENV=test jest",
+    "test:prod": "cross-env NODE_ENV=test jest --passWithNoTests --coverage",
     "test:dev": "cross-env NODE_ENV=test jest --watchAll --coverage",
-    "lint": "eslint . --ext .ts"
+    "lint": "eslint . --ext .ts",
+    "prepare": "husky"
   },
   "keywords": [],
   "author": "",
@@ -49,6 +51,7 @@
     "debug": "^4.3.4",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "husky": "^9.0.11",
     "joi": "^17.12.3",
     "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.0",
