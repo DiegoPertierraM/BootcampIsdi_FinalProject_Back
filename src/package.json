@@ -1,0 +1,5 @@
+{
+  "scripts": {
+    "test:prod": "cross-env NODE_ENV=test jest --passWithNoTests --coverage"
+  }
+}
