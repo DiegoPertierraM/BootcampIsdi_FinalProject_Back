@@ -1,13 +1,13 @@
 {
-  "name": "week7",
+  "name": "diego-pertierra-final-project",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_ENV=prod node dist/index.js",
-    "start:dev": "cross-env DEBUG=TF* NODE_ENV=dev PORT=3400 node --watch --env-file=.env dist/index.js",
-    "start:mon": "cross-env DEBUG=TF* NODE_ENV=dev PORT=3400 nodemon dist/index.js",
+    "start:dev": "cross-env DEBUG=TFD* NODE_ENV=dev PORT=3400 node --watch --env-file=.env dist/index.js",
+    "start:mon": "cross-env DEBUG=TFD* NODE_ENV=dev PORT=3400 nodemon dist/index.js",
     "build": "tsc",
     "dev": "tsc -w",
     "test": "cross-env NODE_ENV=test jest",
@@ -17,7 +17,7 @@
     "prepare": "husky"
   },
   "keywords": [],
-  "author": "",
+  "author": "Diego",
   "license": "ISC",
   "prettier": {
     "singleQuote": true

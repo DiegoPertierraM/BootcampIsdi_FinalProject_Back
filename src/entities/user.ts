@@ -10,9 +10,9 @@ export type User = {
   birthDate: Date;
   gender: string;
   bio: string;
-  events: Event[];
-  friends: User[];
-  comments: Comment[];
+  events?: Event[];
+  friends?: User[];
+  comments?: Comment[];
 };
 
 export type UserCreateDto = {

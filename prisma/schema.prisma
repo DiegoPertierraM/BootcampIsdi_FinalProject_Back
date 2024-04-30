@@ -8,71 +8,71 @@ datasource db {
 }
 
 model User {
-    id            String    @id @default(cuid())
-    username      String    @unique
-    email         String    @unique
-    password      String
-    role          Role      @default(user)
-    location      String
-    birthDate     DateTime
-    gender        Gender    @default(unspecified)
-    bio           String
-    avatar        String    @default("sample.jpg")
-    events        Event[]   @relation("EventAttendance")
-    createdEvents Event[]   @relation("UserEvents")
-    friends       User[]    @relation("UserFriends")
-    friendOf      User[]    @relation("UserFriends")
-    comments      Comment[]
-    createdAt     DateTime  @default(now())
-    updatedAt     DateTime  @updatedAt
-  }
+  id            String    @id @default(cuid())
+  username      String    @unique
+  email         String    @unique
+  password      String
+  role          Role      @default(user)
+  location      String
+  birthDate     DateTime
+  gender        Gender    @default(unspecified)
+  bio           String
+  avatar        String    @default("sample.jpg")
+  events        Event[]   @relation("EventAttendance")
+  createdEvents Event[]   @relation("UserEvents")
+  friends       User[]    @relation("UserFriends")
+  friendOf      User[]    @relation("UserFriends")
+  comments      Comment[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
 
-  enum Role {
-    admin
-    user
-    guest
-  }
+enum Role {
+  admin
+  user
+  guest
+}
 
-  enum Gender {
-    male
-    female
-    unspecified
-  }
+enum Gender {
+  male
+  female
+  unspecified
+}
 
-  model Event {
-    id          String    @id @default(cuid())
-    title       String
-    description String
-    sport       Sport     @default(exercise)
-    date        DateTime
-    location    String
-    creator     User      @relation("UserEvents", fields: [creatorId], references: [id])
-    creatorId   String
-    attendees   User[]    @relation("EventAttendance")
-    comments    Comment[]
-    createdAt   DateTime  @default(now())
-    updatedAt   DateTime  @updatedAt
-  }
+model Event {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  sport       Sport     @default(exercise)
+  date        DateTime
+  location    String
+  creator     User      @relation("UserEvents", fields: [creatorId], references: [id])
+  creatorId   String
+  attendees   User[]    @relation("EventAttendance")
+  comments    Comment[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
 
-  model Comment {
-    id        String   @id @default(cuid())
-    content   String
-    author    User     @relation(fields: [authorId], references: [id])
-    authorId  String
-    event     Event    @relation(fields: [eventId], references: [id])
-    eventId   String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-  }
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String
+  event     Event    @relation(fields: [eventId], references: [id])
+  eventId   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
 
-  enum Sport {
-    football
-    basketball
-    volleyball
-    tennis
-    rugby
-    karate
-    yoga
-    running
-    exercise
-  }
+enum Sport {
+  football
+  basketball
+  volleyball
+  tennis
+  rugby
+  karate
+  yoga
+  running
+  exercise
+}
