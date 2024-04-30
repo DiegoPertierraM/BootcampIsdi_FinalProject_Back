@@ -22,11 +22,8 @@ jobs:
         run: npm ci
       - name: Testing coverage
         run: npm run test:prod #Change for a valid npm script
-        working-directory: src # The directory containing the source code
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Generate a token on Sonarcloud.io, add it to the secrets of this repo with the name SONAR_TOKEN (Settings > Secrets > Actions > add new repository secret)
-        with:
-          projectBaseDir: src # The directory containing the source code
