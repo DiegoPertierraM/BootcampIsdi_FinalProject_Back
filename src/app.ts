@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import { UsersRepo } from './repositories/users.repo.js';
 import { UsersRouter } from './routers/users.router.js';
 import { UsersController } from './controllers/users.controller.js';
+import { AuthInterceptor } from './middleware/auth.interceptor.js';
 
 const debug = createDebug('TFD:app');
 export const createApp = () => {
@@ -19,8 +20,10 @@ export const startApp = (app: Express, prisma: PrismaClient) => {
   app.use(morgan('dev'));
   app.use(cors());
 
+  const authInterceptor = new AuthInterceptor();
+
   const usersRepo = new UsersRepo(prisma);
   const usersController = new UsersController(usersRepo);
-  const usersRouter = new UsersRouter(usersController);
+  const usersRouter = new UsersRouter(usersController, authInterceptor);
   app.use('/users', usersRouter.router);
 };

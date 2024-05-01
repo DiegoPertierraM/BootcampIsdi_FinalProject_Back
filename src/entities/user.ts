@@ -1,6 +1,5 @@
-import Joi from 'joi';
-
 export type User = {
+  id: string;
   username: string;
   email: string;
   password?: string;
@@ -8,7 +7,7 @@ export type User = {
   avatar: string;
   location: string;
   birthDate: Date;
-  gender: string;
+  gender: 'male' | 'female' | 'unspecified';
   bio: string;
   events?: Event[];
   friends?: User[];
@@ -22,7 +21,7 @@ export type UserCreateDto = {
   avatar: string;
   location: string;
   birthDateString: string;
-  gender: string;
+  gender: 'male' | 'female' | 'unspecified';
   bio?: string;
 };
 
