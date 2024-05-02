@@ -1,7 +1,7 @@
 import { type NextFunction, type Request, type Response } from 'express';
 import createDebug from 'debug';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-const debug = createDebug('W7E:errors:middleware');
+const debug = createDebug('TFD:errors:middleware');
 
 export class HttpError extends Error {
   constructor(

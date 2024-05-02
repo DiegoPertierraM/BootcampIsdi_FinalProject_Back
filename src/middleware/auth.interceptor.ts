@@ -5,7 +5,7 @@ import { HttpError } from './errors.middleware.js';
 import { type Repo } from '../repositories/type.repo.js';
 import { Auth, type Payload } from '../services/auth.services.js';
 
-const debug = createDebug('W7E:auth:interceptor');
+const debug = createDebug('TFD:auth:interceptor');
 
 export class AuthInterceptor {
   constructor() {

@@ -2,6 +2,7 @@ import { Router as createRouter } from 'express';
 import createDebug from 'debug';
 import { type UsersController } from '../controllers/users.controller.js';
 import { type AuthInterceptor } from '../middleware/auth.interceptor';
+import { type FilesInterceptor } from '../middleware/files.interceptor.js';
 
 const debug = createDebug('TFD:users:router');
 
@@ -10,11 +11,17 @@ export class UsersRouter {
 
   constructor(
     readonly controller: UsersController,
-    readonly authInterceptor: AuthInterceptor
+    readonly authInterceptor: AuthInterceptor,
+    readonly filesInterceptor: FilesInterceptor
   ) {
     debug('Instantiated users router');
 
-    this.router.post('/register', controller.create.bind(controller));
+    this.router.post(
+      '/register',
+      filesInterceptor.singleFile('avatar'),
+      filesInterceptor.cloudinaryUpload.bind(filesInterceptor),
+      controller.create.bind(controller)
+    );
     this.router.post('/login', controller.login.bind(controller));
 
     this.router.get('/', controller.getAll.bind(controller));
