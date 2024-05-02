@@ -5,15 +5,6 @@ import multer from 'multer';
 import { HttpError } from './errors.middleware.js';
 const debug = createDebug('TFD:files:interceptor');
 
-cloudinary.config({
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  cloud_name: 'dehkeqyua',
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  api_key: '284534545347296',
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  api_secret: 'MJZwejMQ1L3hOReBv_muUiR1TMU',
-});
-
 export class FilesInterceptor {
   constructor() {
     debug('Instantiated files interceptor');
