@@ -33,7 +33,7 @@ export class FilesInterceptor {
   async cloudinaryUpload(req: Request, res: Response, next: NextFunction) {
     debug('Uploading file to cloudinary');
     const options = {
-      folder: 'bc2024_1',
+      folder: 'uniteam',
       // eslint-disable-next-line @typescript-eslint/naming-convention
       use_filename: true,
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -50,7 +50,7 @@ export class FilesInterceptor {
 
     try {
       const result = await cloudinary.uploader.upload(finalPath, options);
-      req.body.cloudinary = result;
+      req.body.avatar = result.secure_url;
       next();
     } catch (error) {
       next(
