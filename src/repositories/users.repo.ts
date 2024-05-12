@@ -14,6 +14,24 @@ const select = {
   birthDate: true,
   gender: true,
   bio: true,
+  events: {
+    select: {
+      id: true,
+      title: true,
+      sport: true,
+      date: true,
+      location: true,
+    },
+  },
+  createdEvents: {
+    select: {
+      id: true,
+      title: true,
+      sport: true,
+      date: true,
+      location: true,
+    },
+  },
 };
 
 export class UsersRepo {
