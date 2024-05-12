@@ -112,7 +112,7 @@ describe('Given an instance of the class TestController', () => {
     test('Then it should call repo.create and next', async () => {
       const error = new Error('Something went wrong');
       (repo.create as jest.Mock).mockRejectedValue(error);
-      const event = { title: 'title', author: 'autor' };
+      const event = { title: 'title', creator: 'autor' };
       req.body = event;
       await controller.create(req, res, next);
       expect(next).toHaveBeenCalledWith(error);
@@ -121,7 +121,7 @@ describe('Given an instance of the class TestController', () => {
 
   describe('When we use the method update', () => {
     test('Then it should call repo.update', async () => {
-      const event = { title: 'title', authorId: 'test' };
+      const event = { title: 'title', creatorId: 'test' };
       req.params = { id: '1' };
       req.body = event;
       (repo.update as jest.Mock).mockResolvedValue(event);
@@ -137,7 +137,7 @@ describe('Given an instance of the class TestController', () => {
         error: new Error('error'),
         value: {},
       });
-      const event = { authorId: 34 };
+      const event = { creatorId: 34 };
       req.body = event;
       await controller.update(req, res, next);
       expect(next).toHaveBeenCalledWith(
@@ -150,7 +150,7 @@ describe('Given an instance of the class TestController', () => {
     test('Then it should call repo.update and next', async () => {
       const error = new Error('Something went wrong');
       (repo.update as jest.Mock).mockRejectedValue(error);
-      const event = { title: 'title', authorId: 'test' };
+      const event = { title: 'title', creatorId: 'test' };
       req.body = event;
       await controller.update(req, res, next);
       expect(next).toHaveBeenCalledWith(error);

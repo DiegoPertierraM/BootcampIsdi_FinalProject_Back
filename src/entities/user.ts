@@ -1,3 +1,5 @@
+import { type Event } from './event';
+
 export type User = {
   id: string;
   username: string;
@@ -9,7 +11,8 @@ export type User = {
   birthDate: Date;
   gender: 'male' | 'female' | 'unspecified';
   bio: string;
-  events?: Event[];
+  events: Array<Partial<Event>>;
+  createdEvents: Array<Partial<Event>>;
   friends?: User[];
   comments?: Comment[];
 };

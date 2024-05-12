@@ -48,6 +48,7 @@ model Event {
   location    String
   creator     User      @relation("UserEvents", fields: [creatorId], references: [id])
   creatorId   String
+  image       String    @default("default.jpg")
   attendees   User[]    @relation("EventAttendance")
   comments    Comment[]
   createdAt   DateTime  @default(now())
