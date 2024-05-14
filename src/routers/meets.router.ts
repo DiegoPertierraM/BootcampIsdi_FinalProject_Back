@@ -2,27 +2,23 @@ import { Router as createRouter } from 'express';
 import createDebug from 'debug';
 import { type AuthInterceptor } from '../middleware/auth.interceptor.js';
 import { type FilesInterceptor } from '../middleware/files.interceptor.js';
-import { type EventsController } from '../controllers/events.controller.js';
-import { type EventsRepo } from '../repositories/events.repo.js';
+import { type MeetsController } from '../controllers/meets.controller.js';
+import { type MeetsRepo } from '../repositories/meets.repo.js';
 
-const debug = createDebug('TFD:events:router');
+const debug = createDebug('TFD:meets:router');
 
-export class EventsRouter {
+export class MeetsRouter {
   router = createRouter();
 
   constructor(
-    readonly controller: EventsController,
+    readonly controller: MeetsController,
     readonly authInterceptor: AuthInterceptor,
     readonly filesInterceptor: FilesInterceptor,
-    readonly eventsRepo: EventsRepo
+    readonly meetsRepo: MeetsRepo
   ) {
-    debug('Instantiated events router');
+    debug('Instantiated meets router');
 
-    this.router.get(
-      '/',
-      authInterceptor.authentication.bind(authInterceptor),
-      controller.getAll.bind(controller)
-    );
+    this.router.get('/', controller.getAll.bind(controller));
     this.router.get(
       '/:id',
       authInterceptor.authentication.bind(authInterceptor),
@@ -39,17 +35,13 @@ export class EventsRouter {
     this.router.patch(
       '/:id',
       authInterceptor.authentication.bind(authInterceptor),
-      authInterceptor
-        .authorization(eventsRepo, 'creator')
-        .bind(authInterceptor),
+      authInterceptor.authorization(meetsRepo, 'creator').bind(authInterceptor),
       controller.update.bind(controller)
     );
     this.router.delete(
       '/:id',
       authInterceptor.authentication.bind(authInterceptor),
-      authInterceptor
-        .authorization(eventsRepo, 'creator')
-        .bind(authInterceptor),
+      authInterceptor.authorization(meetsRepo, 'creator').bind(authInterceptor),
       controller.delete.bind(controller)
     );
   }

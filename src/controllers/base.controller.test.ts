@@ -81,7 +81,7 @@ describe('Given an instance of the class TestController', () => {
     });
   });
 
-  describe('When we use the method create', () => {
+  describe('When we use the method create with VALID data', () => {
     test('Then it should call repo.create', async () => {
       const event = { test: 'test' };
       req.body = event;
@@ -94,7 +94,7 @@ describe('Given an instance of the class TestController', () => {
   });
 
   describe('When we use the method create with INVALID data', () => {
-    test('Then it should call next with an error', async () => {
+    test('Then it should call next with a HTTP error', async () => {
       (testCreateDtoSchema.validate as jest.Mock).mockReturnValueOnce({
         error: new Error('error'),
         value: {},
@@ -105,6 +105,18 @@ describe('Given an instance of the class TestController', () => {
       expect(next).toHaveBeenCalledWith(
         new HttpError(406, 'Not Acceptable', 'error')
       );
+    });
+
+    test('Then it should call next with an error', async () => {
+      (testCreateDtoSchema.validate as jest.Mock).mockReturnValueOnce({
+        error: null,
+        value: {},
+      });
+      const event = { title: 'title' };
+      req.body = event;
+      await controller.create(req, res, next);
+
+      expect(next).toHaveBeenCalled();
     });
   });
 

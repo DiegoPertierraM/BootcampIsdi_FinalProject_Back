@@ -9,9 +9,9 @@ import { UsersController } from './controllers/users.controller.js';
 import { AuthInterceptor } from './middleware/auth.interceptor.js';
 import { FilesInterceptor } from './middleware/files.interceptor.js';
 import { ErrorsMiddleware } from './middleware/errors.middleware.js';
-import { EventsRepo } from './repositories/events.repo.js';
-import { EventsController } from './controllers/events.controller.js';
-import { EventsRouter } from './routers/events.router.js';
+import { MeetsRepo } from './repositories/meets.repo.js';
+import { MeetsController } from './controllers/meets.controller.js';
+import { MeetsRouter } from './routers/meets.router.js';
 
 const debug = createDebug('TFD:app');
 export const createApp = () => {
@@ -28,15 +28,15 @@ export const startApp = (app: Express, prisma: PrismaClient) => {
   const authInterceptor = new AuthInterceptor();
   const filesInterceptor = new FilesInterceptor();
 
-  const eventsRepo = new EventsRepo(prisma);
-  const eventsController = new EventsController(eventsRepo);
-  const eventsRouter = new EventsRouter(
-    eventsController,
+  const meetsRepo = new MeetsRepo(prisma);
+  const meetsController = new MeetsController(meetsRepo);
+  const meetsRouter = new MeetsRouter(
+    meetsController,
     authInterceptor,
     filesInterceptor,
-    eventsRepo
+    meetsRepo
   );
-  app.use('/events', eventsRouter.router);
+  app.use('/meets', meetsRouter.router);
 
   const usersRepo = new UsersRepo(prisma);
   const usersController = new UsersController(usersRepo);
