@@ -161,6 +161,15 @@ export class UsersRepo implements Repo<User, UserCreateDto> {
     });
   }
 
+  async deleteMeet(userId: string, meetId: string) {
+    console.log('Deleting meet:', meetId, 'for user:', userId);
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { savedMeets: { disconnect: { id: meetId } } },
+      include: { savedMeets: true },
+    });
+  }
+
   async addFriend(userId: string, friendId: string) {
     return this.prisma.user.update({
       where: { id: userId },

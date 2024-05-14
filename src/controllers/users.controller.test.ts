@@ -23,6 +23,7 @@ describe('Given a instance of the class UsersController', () => {
     update: jest.fn(),
     delete: jest.fn(),
     saveMeet: jest.fn(),
+    deleteMeet: jest.fn(),
     addFriend: jest.fn(),
     getFriends: jest.fn(),
   } as unknown as UsersRepo;
@@ -206,6 +207,50 @@ describe('Given a instance of the class UsersController', () => {
       expect(next).toHaveBeenCalledWith(
         expect.objectContaining({
           message: 'Failed to save meet',
+        })
+      );
+    });
+  });
+
+  describe('When we use the method deleteMeet', () => {
+    test('Then it should call repo.deleteMeet with correct parameters', async () => {
+      const mockUserId = '1';
+      const mockMeetId = '2';
+      const req = {
+        params: { userId: mockUserId, meetId: mockMeetId },
+      } as unknown as Request<{ userId: string; meetId: string }>;
+      const res = { sendStatus: jest.fn() } as unknown as Response;
+      const next = jest.fn();
+
+      (repo.deleteMeet as jest.Mock).mockResolvedValueOnce({});
+
+      await controller.deleteMeet(req, res, next);
+
+      expect(repo.deleteMeet).toHaveBeenCalledWith(mockUserId, mockMeetId);
+      expect(res.sendStatus).toHaveBeenCalledWith(200);
+    });
+
+    test('Then it should call next with an error if an error occurs', async () => {
+      const mockUserId = '1';
+      const mockMeetId = '2';
+      const req = {
+        params: { userId: mockUserId, meetId: mockMeetId },
+      } as unknown as Request<{
+        userId: string;
+        meetId: string;
+      }>;
+      const res = { sendStatus: jest.fn() } as unknown as Response;
+      const next = jest.fn();
+
+      (repo.deleteMeet as jest.Mock).mockRejectedValueOnce(
+        new Error('Failed to delete meet')
+      );
+
+      await controller.deleteMeet(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Failed to delete meet',
         })
       );
     });

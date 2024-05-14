@@ -1,5 +1,4 @@
 import { type Meet } from './meet';
-import { type Prisma } from '@prisma/client';
 
 export type User = {
   id: string;
