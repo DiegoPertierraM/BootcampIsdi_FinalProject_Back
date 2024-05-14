@@ -37,5 +37,22 @@ export class UsersRouter {
       authInterceptor.authentication.bind(authInterceptor),
       controller.delete.bind(controller)
     );
+
+    this.router.post(
+      '/:userId/saved-meets/:meetId',
+      authInterceptor.authentication.bind(authInterceptor),
+      controller.saveMeet.bind(controller)
+    );
+
+    this.router.post(
+      '/:userId/add-friend/:friendId',
+      authInterceptor.authentication.bind(authInterceptor),
+      controller.addFriend.bind(controller)
+    );
+    this.router.get(
+      '/:userId/friends',
+      authInterceptor.authentication.bind(authInterceptor),
+      controller.getFriends.bind(controller)
+    );
   }
 }

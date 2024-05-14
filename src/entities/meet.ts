@@ -1,6 +1,6 @@
 import { type User } from './user';
 
-export type Event = {
+export type Meet = {
   id: string;
   title: string;
   creator: Partial<User>;
@@ -13,7 +13,7 @@ export type Event = {
   comments?: Comment[];
 };
 
-export type EventCreateDto = {
+export type MeetCreateDto = {
   title: string;
   creatorId: string;
   description?: string;
@@ -23,7 +23,7 @@ export type EventCreateDto = {
   image: string;
 };
 
-export type EventUpdateDto = Partial<EventCreateDto>;
+export type MeetUpdateDto = Partial<MeetCreateDto>;
 
 export type Sport =
   | 'football'

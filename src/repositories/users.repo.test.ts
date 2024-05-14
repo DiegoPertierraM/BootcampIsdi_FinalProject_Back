@@ -115,4 +115,72 @@ describe('Given an instance of the class UsersRepo', () => {
       );
     });
   });
+
+  describe('When we call the method saveMeet', () => {
+    it('should call prisma.user.update with correct parameters', async () => {
+      const mockUserId = '1';
+      const mockMeetId = '2';
+
+      (mockPrisma.user.update as jest.Mock).mockResolvedValueOnce({});
+
+      await usersRepo.saveMeet(mockUserId, mockMeetId);
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+        data: { savedMeets: { connect: { id: mockMeetId } } },
+        include: { savedMeets: true },
+      });
+    });
+  });
+
+  describe('When we call the method addFriend', () => {
+    it('should call prisma.user.update with correct parameters', async () => {
+      const mockUserId = '1';
+      const mockFriendId = '2';
+
+      (mockPrisma.user.update as jest.Mock).mockResolvedValueOnce({});
+
+      await usersRepo.addFriend(mockUserId, mockFriendId);
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+        data: { friends: { connect: { id: mockFriendId } } },
+        include: { friends: true },
+      });
+    });
+  });
+
+  describe('When we call the method getFriends', () => {
+    it('should call prisma.user.findUnique with correct parameters', async () => {
+      const mockUserId = '1';
+      const mockUser = {
+        id: '1',
+        friends: [
+          { id: '2', username: 'friend1' },
+          { id: '3', username: 'friend2' },
+        ],
+      };
+
+      (mockPrisma.user.findUnique as jest.Mock).mockResolvedValueOnce(mockUser);
+
+      const result = await usersRepo.getFriends(mockUserId);
+
+      expect(mockPrisma.user.findUnique).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+        include: { friends: true },
+      });
+
+      expect(result).toEqual(mockUser.friends);
+    });
+
+    it('should throw HttpError if user is not found', async () => {
+      const mockUserId = '1';
+
+      (mockPrisma.user.findUnique as jest.Mock).mockResolvedValueOnce(null);
+
+      await expect(usersRepo.getFriends(mockUserId)).rejects.toThrow(
+        new HttpError(404, 'Not Found', `User ${mockUserId} not found`)
+      );
+    });
+  });
 });

@@ -1,7 +1,7 @@
 import Joi from 'joi';
-import { type EventCreateDto } from './event';
+import { type MeetCreateDto } from './meet';
 
-export const eventCreateDtoSchema = Joi.object<EventCreateDto>({
+export const meetCreateDtoSchema = Joi.object<MeetCreateDto>({
   title: Joi.string().required(),
   creatorId: Joi.string().required(),
   description: Joi.string().default(''),
@@ -11,7 +11,7 @@ export const eventCreateDtoSchema = Joi.object<EventCreateDto>({
   image: Joi.string(),
 });
 
-export const eventUpdateDtoSchema = Joi.object<EventCreateDto>({
+export const meetUpdateDtoSchema = Joi.object<MeetCreateDto>({
   title: Joi.string(),
   creatorId: Joi.string(),
   description: Joi.string(),

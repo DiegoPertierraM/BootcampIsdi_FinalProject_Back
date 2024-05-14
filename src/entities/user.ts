@@ -1,4 +1,5 @@
-import { type Event } from './event';
+import { type Meet } from './meet';
+import { type Prisma } from '@prisma/client';
 
 export type User = {
   id: string;
@@ -11,9 +12,10 @@ export type User = {
   birthDate: Date;
   gender: 'male' | 'female' | 'unspecified';
   bio: string;
-  events: Array<Partial<Event>>;
-  createdEvents: Array<Partial<Event>>;
-  friends?: User[];
+  joinedMeets: Array<Partial<Meet>>;
+  createdMeets: Array<Partial<Meet>>;
+  savedMeets: Array<Partial<Meet>>;
+  friends?: Array<Partial<User>>;
   comments?: Comment[];
 };
 

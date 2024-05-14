@@ -78,7 +78,8 @@ export class UsersController extends BaseController<User, UserCreateDto> {
 
     req.body.password = await Auth.hash(req.body.password as string);
 
-    req.body.image = req.body.avatar as string;
+    req.body.avatar = req.body.image as string;
+    delete req.body.image;
 
     await super.create(req, res, next);
   }
@@ -89,5 +90,54 @@ export class UsersController extends BaseController<User, UserCreateDto> {
     }
 
     await super.update(req, res, next);
+  }
+
+  async saveMeet(
+    req: Request<{ userId: string; meetId: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { userId, meetId } = req.params;
+    try {
+      await this.repo.saveMeet(userId, meetId);
+      res.sendStatus(200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async addFriend(
+    req: Request<{ userId: string; friendId: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
+    console.log(req.params);
+    const { userId, friendId } = req.params;
+
+    try {
+      await this.repo.addFriend(userId, friendId);
+      res.sendStatus(200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async getFriends(
+    req: Request<{ userId: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { userId } = req.params;
+
+    try {
+      const friends = await this.repo.getFriends(userId);
+      if (!friends) {
+        throw new HttpError(404, 'Not Found', `User ${userId} not found`);
+      }
+
+      res.json(friends);
+    } catch (error) {
+      next(error);
+    }
   }
 }

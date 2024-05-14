@@ -1,7 +1,12 @@
 import { type PrismaClient } from '@prisma/client';
 import createDebug from 'debug';
 import { HttpError } from '../middleware/errors.middleware.js';
-import { type UserCreateDto } from '../entities/user.js';
+import {
+  type UserUpdateDto,
+  type UserCreateDto,
+  type User,
+} from '../entities/user.js';
+import { type Repo } from './type.repo.js';
 const debug = createDebug('TFD:users:repository');
 
 const select = {
@@ -14,27 +19,48 @@ const select = {
   birthDate: true,
   gender: true,
   bio: true,
-  events: {
+  friends: {
     select: {
-      id: true,
-      title: true,
-      sport: true,
-      date: true,
-      location: true,
+      username: true,
+      email: true,
     },
   },
-  createdEvents: {
+  joinedMeets: {
     select: {
       id: true,
       title: true,
       sport: true,
       date: true,
       location: true,
+      image: true,
+      attendees: true,
+    },
+  },
+  createdMeets: {
+    select: {
+      id: true,
+      title: true,
+      sport: true,
+      date: true,
+      location: true,
+      image: true,
+      attendees: true,
+    },
+  },
+  savedMeets: {
+    select: {
+      id: true,
+      title: true,
+      sport: true,
+      date: true,
+      location: true,
+      image: true,
+      attendees: true,
     },
   },
 };
 
-export class UsersRepo {
+export class UsersRepo implements Repo<User, UserCreateDto> {
   constructor(private readonly prisma: PrismaClient) {
     debug('Instantiated users repository');
   }
@@ -58,8 +84,6 @@ export class UsersRepo {
   }
 
   async searchForLogin(key: 'email' | 'username', value: string) {
-    // Check if the key is valid
-
     if (!['email', 'username'].includes(key)) {
       throw new HttpError(404, 'Not Found', 'Invalid query parameters');
     }
@@ -85,6 +109,7 @@ export class UsersRepo {
   }
 
   async create(data: UserCreateDto) {
+    console.log('data', data);
     const { birthDateString, ...rest } = data;
     const newUser = this.prisma.user.create({
       data: {
@@ -98,7 +123,7 @@ export class UsersRepo {
     return newUser;
   }
 
-  async update(id: string, data: Partial<UserCreateDto>) {
+  async update(id: string, data: Partial<UserUpdateDto>) {
     const user = await this.prisma.user.findUnique({
       where: { id },
     });
@@ -125,5 +150,35 @@ export class UsersRepo {
       where: { id },
       select,
     });
+  }
+
+  async saveMeet(userId: string, meetId: string) {
+    console.log('Saving meet:', meetId, 'for user:', userId);
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { savedMeets: { connect: { id: meetId } } },
+      include: { savedMeets: true },
+    });
+  }
+
+  async addFriend(userId: string, friendId: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { friends: { connect: { id: friendId } } },
+      include: { friends: true },
+    });
+  }
+
+  async getFriends(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: { friends: true },
+    });
+
+    if (!user) {
+      throw new HttpError(404, 'Not Found', `User ${userId} not found`);
+    }
+
+    return user.friends as unknown as Partial<User[]>;
   }
 }

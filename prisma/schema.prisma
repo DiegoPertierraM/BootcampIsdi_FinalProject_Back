@@ -8,23 +8,24 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  username      String    @unique
-  email         String    @unique
-  password      String
-  role          Role      @default(user)
-  location      String
-  birthDate     DateTime
-  gender        Gender    @default(unspecified)
-  bio           String
-  avatar        String    @default("sample.jpg")
-  events        Event[]   @relation("EventAttendance")
-  createdEvents Event[]   @relation("UserEvents")
-  friends       User[]    @relation("UserFriends")
-  friendOf      User[]    @relation("UserFriends")
-  comments      Comment[]
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id           String    @id @default(cuid())
+  username     String    @unique
+  email        String    @unique
+  password     String
+  role         Role      @default(user)
+  location     String
+  birthDate    DateTime
+  gender       Gender    @default(unspecified)
+  bio          String
+  avatar       String    @default("sample.jpg")
+  joinedMeets  Meet[]    @relation("MeetAttendance")
+  createdMeets Meet[]    @relation("UserMeets")
+  savedMeets   Meet[]    @relation("SavedMeets")
+  friends      User[]    @relation("UserFriends")
+  friendOf     User[]    @relation("UserFriends")
+  comments     Comment[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 enum Role {
@@ -39,17 +40,18 @@ enum Gender {
   unspecified
 }
 
-model Event {
+model Meet {
   id          String    @id @default(cuid())
   title       String
   description String
   sport       Sport     @default(exercise)
   date        DateTime
   location    String
-  creator     User      @relation("UserEvents", fields: [creatorId], references: [id])
+  creator     User      @relation("UserMeets", fields: [creatorId], references: [id])
   creatorId   String
   image       String    @default("default.jpg")
-  attendees   User[]    @relation("EventAttendance")
+  attendees   User[]    @relation("MeetAttendance")
+  savedBy     User[]    @relation("SavedMeets")
   comments    Comment[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
@@ -60,8 +62,8 @@ model Comment {
   content   String
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String
-  event     Event    @relation(fields: [eventId], references: [id])
-  eventId   String
+  Meet      Meet     @relation(fields: [meetId], references: [id])
+  meetId    String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

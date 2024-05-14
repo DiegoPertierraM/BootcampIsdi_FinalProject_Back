@@ -1,8 +1,8 @@
 import { type PrismaClient } from '@prisma/client';
 import createDebug from 'debug';
 import { HttpError } from '../middleware/errors.middleware.js';
-import { type EventCreateDto } from '../entities/event.js';
-const debug = createDebug('TFD:events:repository');
+import { type MeetCreateDto } from '../entities/meet.js';
+const debug = createDebug('TFD:meets:repository');
 
 const select = {
   id: true,
@@ -30,32 +30,32 @@ const select = {
   },
 };
 
-export class EventsRepo {
+export class MeetsRepo {
   constructor(private readonly prisma: PrismaClient) {
-    debug('Instantiated events repository');
+    debug('Instantiated meets repository');
   }
 
   async readAll() {
-    return this.prisma.event.findMany({
+    return this.prisma.meet.findMany({
       select,
     });
   }
 
   async readById(id: string) {
-    const event = await this.prisma.event.findUnique({
+    const meet = await this.prisma.meet.findUnique({
       where: { id },
       select,
     });
-    if (!event) {
-      throw new HttpError(404, 'Not Found', `Event ${id} not found`);
+    if (!meet) {
+      throw new HttpError(404, 'Not Found', `meet ${id} not found`);
     }
 
-    return event;
+    return meet;
   }
 
-  async create(data: EventCreateDto) {
+  async create(data: MeetCreateDto) {
     const { date, description, ...rest } = data;
-    const newEvent = this.prisma.event.create({
+    const newMeet = this.prisma.meet.create({
       data: {
         description: data.description ?? '',
         date: new Date(date),
@@ -63,19 +63,19 @@ export class EventsRepo {
       },
       select,
     });
-    return newEvent;
+    return newMeet;
   }
 
-  async update(id: string, data: Partial<EventCreateDto>) {
-    const event = await this.prisma.event.findUnique({
+  async update(id: string, data: Partial<MeetCreateDto>) {
+    const meet = await this.prisma.meet.findUnique({
       where: { id },
       select,
     });
-    if (!event) {
-      throw new HttpError(404, 'Not Found', `Event ${id} not found`);
+    if (!meet) {
+      throw new HttpError(404, 'Not Found', `meet ${id} not found`);
     }
 
-    return this.prisma.event.update({
+    return this.prisma.meet.update({
       where: { id },
       data,
       select,
@@ -83,15 +83,15 @@ export class EventsRepo {
   }
 
   async delete(id: string) {
-    const event = await this.prisma.event.findUnique({
+    const meet = await this.prisma.meet.findUnique({
       where: { id },
       select,
     });
-    if (!event) {
-      throw new HttpError(404, 'Not Found', `Event ${id} not found`);
+    if (!meet) {
+      throw new HttpError(404, 'Not Found', `meet ${id} not found`);
     }
 
-    return this.prisma.event.delete({
+    return this.prisma.meet.delete({
       where: { id },
       select,
     });

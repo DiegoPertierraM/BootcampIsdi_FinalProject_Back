@@ -50,9 +50,7 @@ export class FilesInterceptor {
 
     try {
       const result = await cloudinary.uploader.upload(finalPath, options);
-      console.log(result);
       req.body.image = result.secure_url;
-      console.log(req.body);
       next();
     } catch (error) {
       next(
