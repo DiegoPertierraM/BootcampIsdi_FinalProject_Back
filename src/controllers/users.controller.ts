@@ -106,6 +106,20 @@ export class UsersController extends BaseController<User, UserCreateDto> {
     }
   }
 
+  async deleteMeet(
+    req: Request<{ userId: string; meetId: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { userId, meetId } = req.params;
+    try {
+      await this.repo.deleteMeet(userId, meetId);
+      res.sendStatus(200);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async addFriend(
     req: Request<{ userId: string; friendId: string }>,
     res: Response,

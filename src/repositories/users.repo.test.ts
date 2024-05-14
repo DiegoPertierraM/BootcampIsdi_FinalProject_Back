@@ -133,6 +133,23 @@ describe('Given an instance of the class UsersRepo', () => {
     });
   });
 
+  describe('When we call the method deleteMeet', () => {
+    it('should call prisma.user.update with correct parameters', async () => {
+      const mockUserId = '1';
+      const mockMeetId = '2';
+
+      (mockPrisma.user.update as jest.Mock).mockResolvedValueOnce({});
+
+      await usersRepo.deleteMeet(mockUserId, mockMeetId);
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+        data: { savedMeets: { disconnect: { id: mockMeetId } } },
+        include: { savedMeets: true },
+      });
+    });
+  });
+
   describe('When we call the method addFriend', () => {
     it('should call prisma.user.update with correct parameters', async () => {
       const mockUserId = '1';
