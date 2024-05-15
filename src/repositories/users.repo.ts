@@ -153,7 +153,6 @@ export class UsersRepo implements Repo<User, UserCreateDto> {
   }
 
   async saveMeet(userId: string, meetId: string) {
-    console.log('Saving meet:', meetId, 'for user:', userId);
     return this.prisma.user.update({
       where: { id: userId },
       data: { savedMeets: { connect: { id: meetId } } },
@@ -162,11 +161,26 @@ export class UsersRepo implements Repo<User, UserCreateDto> {
   }
 
   async deleteMeet(userId: string, meetId: string) {
-    console.log('Deleting meet:', meetId, 'for user:', userId);
     return this.prisma.user.update({
       where: { id: userId },
       data: { savedMeets: { disconnect: { id: meetId } } },
       include: { savedMeets: true },
+    });
+  }
+
+  async joinMeet(userId: string, meetId: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { joinedMeets: { connect: { id: meetId } } },
+      include: { joinedMeets: true },
+    });
+  }
+
+  async leaveMeet(userId: string, meetId: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { joinedMeets: { disconnect: { id: meetId } } },
+      include: { joinedMeets: true },
     });
   }
 

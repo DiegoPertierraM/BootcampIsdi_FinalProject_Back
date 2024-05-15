@@ -51,6 +51,18 @@ export class UsersRouter {
     );
 
     this.router.post(
+      '/:userId/joined-meets/:meetId',
+      authInterceptor.authentication.bind(authInterceptor),
+      controller.joinMeet.bind(controller)
+    );
+
+    this.router.delete(
+      '/:userId/joined-meets/:meetId',
+      authInterceptor.authentication.bind(authInterceptor),
+      controller.leaveMeet.bind(controller)
+    );
+
+    this.router.post(
       '/:userId/add-friend/:friendId',
       authInterceptor.authentication.bind(authInterceptor),
       controller.addFriend.bind(controller)

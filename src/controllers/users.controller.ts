@@ -50,6 +50,7 @@ export class UsersController extends BaseController<User, UserCreateDto> {
 
       if (!(await Auth.compare(password, user.password!))) {
         next(error);
+        console.log(error);
         return;
       }
 
@@ -99,8 +100,8 @@ export class UsersController extends BaseController<User, UserCreateDto> {
   ) {
     const { userId, meetId } = req.params;
     try {
-      await this.repo.saveMeet(userId, meetId);
-      res.sendStatus(200);
+      const user = await this.repo.saveMeet(userId, meetId);
+      res.status(200).json(user);
     } catch (error) {
       next(error);
     }
@@ -113,8 +114,36 @@ export class UsersController extends BaseController<User, UserCreateDto> {
   ) {
     const { userId, meetId } = req.params;
     try {
-      await this.repo.deleteMeet(userId, meetId);
-      res.sendStatus(200);
+      const user = await this.repo.deleteMeet(userId, meetId);
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async joinMeet(
+    req: Request<{ userId: string; meetId: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { userId, meetId } = req.params;
+    try {
+      const user = await this.repo.joinMeet(userId, meetId);
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async leaveMeet(
+    req: Request<{ userId: string; meetId: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { userId, meetId } = req.params;
+    try {
+      const user = await this.repo.leaveMeet(userId, meetId);
+      res.status(200).json(user);
     } catch (error) {
       next(error);
     }

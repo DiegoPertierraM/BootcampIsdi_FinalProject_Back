@@ -13,6 +13,8 @@ describe('Given an instance of the class UsersRouter', () => {
     delete: jest.fn(),
     saveMeet: jest.fn(),
     deleteMeet: jest.fn(),
+    joinMeet: jest.fn(),
+    leaveMeet: jest.fn(),
     addFriend: jest.fn(),
     getFriends: jest.fn(),
   } as unknown as UsersController;

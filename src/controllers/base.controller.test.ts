@@ -123,7 +123,7 @@ describe('Given an instance of the class TestController', () => {
   describe('When we use the method create and repo throw an ERROR', () => {
     test('Then it should call repo.create and next', async () => {
       const error = new Error('Something went wrong');
-      (repo.create as jest.Mock).mockRejectedValue(error);
+      (repo.create as jest.Mock).mockRejectedValueOnce(error);
       const event = { title: 'title', creator: 'autor' };
       req.body = event;
       await controller.create(req, res, next);
