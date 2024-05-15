@@ -100,7 +100,12 @@ export class UsersController extends BaseController<User, UserCreateDto> {
   ) {
     const { userId, meetId } = req.params;
     try {
-      const user = await this.repo.saveMeet(userId, meetId);
+      const user = await this.repo.manageMeet(
+        userId,
+        meetId,
+        'post',
+        'savedMeets'
+      );
       res.status(200).json(user);
     } catch (error) {
       next(error);
@@ -114,7 +119,12 @@ export class UsersController extends BaseController<User, UserCreateDto> {
   ) {
     const { userId, meetId } = req.params;
     try {
-      const user = await this.repo.deleteMeet(userId, meetId);
+      const user = await this.repo.manageMeet(
+        userId,
+        meetId,
+        'delete',
+        'savedMeets'
+      );
       res.status(200).json(user);
     } catch (error) {
       next(error);
@@ -128,7 +138,12 @@ export class UsersController extends BaseController<User, UserCreateDto> {
   ) {
     const { userId, meetId } = req.params;
     try {
-      const user = await this.repo.joinMeet(userId, meetId);
+      const user = await this.repo.manageMeet(
+        userId,
+        meetId,
+        'post',
+        'joinedMeets'
+      );
       res.status(200).json(user);
     } catch (error) {
       next(error);
@@ -142,7 +157,12 @@ export class UsersController extends BaseController<User, UserCreateDto> {
   ) {
     const { userId, meetId } = req.params;
     try {
-      const user = await this.repo.leaveMeet(userId, meetId);
+      const user = await this.repo.manageMeet(
+        userId,
+        meetId,
+        'delete',
+        'joinedMeets'
+      );
       res.status(200).json(user);
     } catch (error) {
       next(error);

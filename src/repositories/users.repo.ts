@@ -1,4 +1,4 @@
-import { type PrismaClient } from '@prisma/client';
+import { type Prisma, type PrismaClient } from '@prisma/client';
 import createDebug from 'debug';
 import { HttpError } from '../middleware/errors.middleware.js';
 import {
@@ -152,35 +152,25 @@ export class UsersRepo implements Repo<User, UserCreateDto> {
     });
   }
 
-  async saveMeet(userId: string, meetId: string) {
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: { savedMeets: { connect: { id: meetId } } },
-      include: { savedMeets: true },
-    });
-  }
+  async manageMeet(
+    userId: string,
+    meetId: string,
+    operation: string,
+    meetType: 'savedMeets' | 'joinedMeets'
+  ) {
+    const data: Prisma.UserUpdateInput = {};
+    if (operation === 'post') {
+      data[meetType] = { connect: { id: meetId } };
+    } else if (operation === 'delete') {
+      data[meetType] = { disconnect: { id: meetId } };
+    } else {
+      throw new Error('Operation unknown');
+    }
 
-  async deleteMeet(userId: string, meetId: string) {
     return this.prisma.user.update({
       where: { id: userId },
-      data: { savedMeets: { disconnect: { id: meetId } } },
-      include: { savedMeets: true },
-    });
-  }
-
-  async joinMeet(userId: string, meetId: string) {
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: { joinedMeets: { connect: { id: meetId } } },
-      include: { joinedMeets: true },
-    });
-  }
-
-  async leaveMeet(userId: string, meetId: string) {
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: { joinedMeets: { disconnect: { id: meetId } } },
-      include: { joinedMeets: true },
+      data,
+      include: { [meetType]: true },
     });
   }
 
