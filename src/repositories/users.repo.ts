@@ -159,9 +159,9 @@ export class UsersRepo implements Repo<User, UserCreateDto> {
     meetType: 'savedMeets' | 'joinedMeets'
   ) {
     const data: Prisma.UserUpdateInput = {};
-    if (operation === 'post') {
+    if (operation === 'POST') {
       data[meetType] = { connect: { id: meetId } };
-    } else if (operation === 'delete') {
+    } else if (operation === 'DELETE') {
       data[meetType] = { disconnect: { id: meetId } };
     } else {
       throw new Error('Operation unknown');

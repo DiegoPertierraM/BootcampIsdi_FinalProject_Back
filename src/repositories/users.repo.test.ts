@@ -116,99 +116,58 @@ describe('Given an instance of the class UsersRepo', () => {
     });
   });
 
-  describe('When we call the method manageMeet with operation "post"', () => {
-    it('should call prisma.user.update with correct parameters', async () => {
-      const mockUserId = '1';
-      const mockMeetId = '2';
+  describe('When we call the method manageMeet', () => {
+    const mockUserId = '1';
+    const mockMeetId = '2';
 
-      (mockPrisma.user.update as jest.Mock).mockResolvedValueOnce({});
-
-      await usersRepo.manageMeet(mockUserId, mockMeetId, 'post', 'savedMeets');
-
-      expect(mockPrisma.user.update).toHaveBeenCalledWith({
-        where: { id: mockUserId },
-        data: { savedMeets: { connect: { id: mockMeetId } } },
-        include: { savedMeets: true },
+    describe('and operation is "POST"', () => {
+      beforeEach(() => {
+        (mockPrisma.user.update as jest.Mock).mockResolvedValueOnce({});
       });
-    });
-  });
 
-  describe('When we call the method manageMeet with operation "delete"', () => {
-    it('should call prisma.user.update with correct parameters', async () => {
-      const mockUserId = '1';
-      const mockMeetId = '2';
-
-      (mockPrisma.user.update as jest.Mock).mockResolvedValueOnce({});
-
-      await usersRepo.manageMeet(
-        mockUserId,
-        mockMeetId,
-        'delete',
-        'savedMeets'
-      );
-
-      expect(mockPrisma.user.update).toHaveBeenCalledWith({
-        where: { id: mockUserId },
-        data: { savedMeets: { disconnect: { id: mockMeetId } } },
-        include: { savedMeets: true },
-      });
-    });
-  });
-
-  describe('When we call the method manageMeet for joinMeet', () => {
-    it('should call prisma.user.update with correct parameters', async () => {
-      const mockUserId = '1';
-      const mockMeetId = '2';
-
-      (mockPrisma.user.update as jest.Mock).mockResolvedValueOnce({});
-
-      await usersRepo.manageMeet(mockUserId, mockMeetId, 'post', 'joinedMeets');
-
-      expect(mockPrisma.user.update).toHaveBeenCalledWith({
-        where: { id: mockUserId },
-        data: { joinedMeets: { connect: { id: mockMeetId } } },
-        include: { joinedMeets: true },
-      });
-    });
-  });
-
-  describe('When we call the method manageMeet for leaveMeet', () => {
-    it('should call prisma.user.update with correct parameters', async () => {
-      const mockUserId = '1';
-      const mockMeetId = '2';
-
-      (mockPrisma.user.update as jest.Mock).mockResolvedValueOnce({});
-
-      await usersRepo.manageMeet(
-        mockUserId,
-        mockMeetId,
-        'delete',
-        'joinedMeets'
-      );
-
-      expect(mockPrisma.user.update).toHaveBeenCalledWith({
-        where: { id: mockUserId },
-        data: { joinedMeets: { disconnect: { id: mockMeetId } } },
-        include: { joinedMeets: true },
-      });
-    });
-  });
-
-  describe('When we use the method manageMeet and operation parameter is not post or delete', () => {
-    test('Then it should throw an error for unknown operation', async () => {
-      const mockUserId = '1';
-      const mockMeetId = '2';
-      const mockOperation = 'unknownOperation';
-      const mockMeetType = 'joinedMeets';
-
-      await expect(
-        usersRepo.manageMeet(
+      it('should call prisma.user.update with correct parameters and connect the meet', async () => {
+        await usersRepo.manageMeet(
           mockUserId,
           mockMeetId,
-          mockOperation,
-          mockMeetType
-        )
-      ).rejects.toThrow('Operation unknown');
+          'POST',
+          'savedMeets'
+        );
+
+        expect(mockPrisma.user.update).toHaveBeenCalledWith({
+          where: { id: mockUserId },
+          data: { savedMeets: { connect: { id: mockMeetId } } },
+          include: { savedMeets: true },
+        });
+      });
+    });
+
+    describe('and operation is "DELETE"', () => {
+      beforeEach(() => {
+        (mockPrisma.user.update as jest.Mock).mockResolvedValueOnce({});
+      });
+
+      it('should call prisma.user.update with correct parameters and disconnect the meet', async () => {
+        await usersRepo.manageMeet(
+          mockUserId,
+          mockMeetId,
+          'DELETE',
+          'savedMeets'
+        );
+
+        expect(mockPrisma.user.update).toHaveBeenCalledWith({
+          where: { id: mockUserId },
+          data: { savedMeets: { disconnect: { id: mockMeetId } } },
+          include: { savedMeets: true },
+        });
+      });
+    });
+
+    describe('and operation is unknown', () => {
+      it('should throw an error', async () => {
+        await expect(
+          usersRepo.manageMeet(mockUserId, mockMeetId, 'UNKNOWN', 'savedMeets')
+        ).rejects.toThrow(new Error('Operation unknown'));
+      });
     });
   });
 

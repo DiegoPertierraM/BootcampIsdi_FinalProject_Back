@@ -9,6 +9,7 @@ import {
 import { type WithLoginRepo } from '../repositories/type.repo.js';
 import { HttpError } from '../middleware/errors.middleware.js';
 import { Auth } from '../services/auth.services.js';
+import { type MeetType, type Method } from '../entities/meet.js';
 const debug = createDebug('TFD:users:controller');
 
 export class UsersController extends BaseController<User, UserCreateDto> {
@@ -93,79 +94,31 @@ export class UsersController extends BaseController<User, UserCreateDto> {
     await super.update(req, res, next);
   }
 
-  async saveMeet(
+  async manageMeet(
     req: Request<{ userId: string; meetId: string }>,
     res: Response,
     next: NextFunction
   ) {
     const { userId, meetId } = req.params;
-    try {
-      const user = await this.repo.manageMeet(
-        userId,
-        meetId,
-        'post',
-        'savedMeets'
-      );
-      res.status(200).json(user);
-    } catch (error) {
-      next(error);
-    }
-  }
+    const { method } = req;
+    const { url } = req;
 
-  async deleteMeet(
-    req: Request<{ userId: string; meetId: string }>,
-    res: Response,
-    next: NextFunction
-  ) {
-    const { userId, meetId } = req.params;
-    try {
-      const user = await this.repo.manageMeet(
-        userId,
-        meetId,
-        'delete',
-        'savedMeets'
-      );
-      res.status(200).json(user);
-    } catch (error) {
-      next(error);
-    }
-  }
+    const match = /\/(saved|joined)-meets\//.exec(url);
+    let meetType = match ? match[1] : null;
+    meetType += 'Meets';
 
-  async joinMeet(
-    req: Request<{ userId: string; meetId: string }>,
-    res: Response,
-    next: NextFunction
-  ) {
-    const { userId, meetId } = req.params;
-    try {
-      const user = await this.repo.manageMeet(
-        userId,
-        meetId,
-        'post',
-        'joinedMeets'
-      );
-      res.status(200).json(user);
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  async leaveMeet(
-    req: Request<{ userId: string; meetId: string }>,
-    res: Response,
-    next: NextFunction
-  ) {
-    const { userId, meetId } = req.params;
-    try {
-      const user = await this.repo.manageMeet(
-        userId,
-        meetId,
-        'delete',
-        'joinedMeets'
-      );
-      res.status(200).json(user);
-    } catch (error) {
-      next(error);
+    if (meetType && method) {
+      try {
+        const user = await this.repo.manageMeet(
+          userId,
+          meetId,
+          method as Method,
+          meetType as MeetType
+        );
+        res.status(200).json(user);
+      } catch (error) {
+        next(error);
+      }
     }
   }
 

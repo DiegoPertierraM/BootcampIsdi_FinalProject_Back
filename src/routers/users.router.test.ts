@@ -11,10 +11,7 @@ describe('Given an instance of the class UsersRouter', () => {
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
-    saveMeet: jest.fn(),
-    deleteMeet: jest.fn(),
-    joinMeet: jest.fn(),
-    leaveMeet: jest.fn(),
+    manageMeet: jest.fn(),
     addFriend: jest.fn(),
     getFriends: jest.fn(),
   } as unknown as UsersController;

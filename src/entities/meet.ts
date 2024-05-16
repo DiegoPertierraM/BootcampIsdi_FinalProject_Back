@@ -35,3 +35,7 @@ export type Sport =
   | 'yoga'
   | 'running'
   | 'exercise';
+
+export type Method = 'post' | 'delete';
+
+export type MeetType = 'joinedMeets' | 'savedMeets';
