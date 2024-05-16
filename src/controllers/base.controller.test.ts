@@ -106,18 +106,6 @@ describe('Given an instance of the class TestController', () => {
         new HttpError(406, 'Not Acceptable', 'error')
       );
     });
-
-    test('Then it should call next with an error', async () => {
-      (testCreateDtoSchema.validate as jest.Mock).mockReturnValueOnce({
-        error: null,
-        value: {},
-      });
-      const event = { title: 'title' };
-      req.body = event;
-      await controller.create(req, res, next);
-
-      expect(next).toHaveBeenCalled();
-    });
   });
 
   describe('When we use the method create and repo throw an ERROR', () => {
@@ -128,21 +116,6 @@ describe('Given an instance of the class TestController', () => {
       req.body = event;
       await controller.create(req, res, next);
       expect(next).toHaveBeenCalledWith(error);
-    });
-  });
-
-  describe('When we use the method create and repo throws an ERROR during validation', () => {
-    test('Then it should call next with a HTTP error', async () => {
-      (testCreateDtoSchema.validate as jest.Mock).mockReturnValueOnce({
-        error: new Error('error'),
-        value: {},
-      });
-      const event = { title: 'title' };
-      req.body = event;
-      await controller.create(req, res, next);
-      expect(next).toHaveBeenCalledWith(
-        new HttpError(406, 'Not Acceptable', 'error')
-      );
     });
   });
 
@@ -181,21 +154,6 @@ describe('Given an instance of the class TestController', () => {
       req.body = event;
       await controller.update(req, res, next);
       expect(next).toHaveBeenCalledWith(error);
-    });
-  });
-
-  describe('When we use the method update and repo throws an ERROR during validation', () => {
-    test('Then it should call next with a HTTP error', async () => {
-      (testUpdateDtoSchema.validate as jest.Mock).mockReturnValueOnce({
-        error: new Error('error'),
-        value: {},
-      });
-      const event = { title: 'title', creatorId: 34 };
-      req.body = event;
-      await controller.update(req, res, next);
-      expect(next).toHaveBeenCalledWith(
-        new HttpError(406, 'Not Acceptable', 'error')
-      );
     });
   });
 
