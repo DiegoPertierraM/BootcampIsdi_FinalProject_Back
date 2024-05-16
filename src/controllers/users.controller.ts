@@ -9,6 +9,7 @@ import {
 import { type WithLoginRepo } from '../repositories/type.repo.js';
 import { HttpError } from '../middleware/errors.middleware.js';
 import { Auth } from '../services/auth.services.js';
+import { type MeetType, type Method } from '../entities/meet.js';
 const debug = createDebug('TFD:users:controller');
 
 export class UsersController extends BaseController<User, UserCreateDto> {
@@ -50,6 +51,7 @@ export class UsersController extends BaseController<User, UserCreateDto> {
 
       if (!(await Auth.compare(password, user.password!))) {
         next(error);
+        console.log(error);
         return;
       }
 
@@ -92,31 +94,31 @@ export class UsersController extends BaseController<User, UserCreateDto> {
     await super.update(req, res, next);
   }
 
-  async saveMeet(
+  async manageMeet(
     req: Request<{ userId: string; meetId: string }>,
     res: Response,
     next: NextFunction
   ) {
     const { userId, meetId } = req.params;
-    try {
-      await this.repo.saveMeet(userId, meetId);
-      res.sendStatus(200);
-    } catch (error) {
-      next(error);
-    }
-  }
+    const { method } = req;
+    const { url } = req;
 
-  async deleteMeet(
-    req: Request<{ userId: string; meetId: string }>,
-    res: Response,
-    next: NextFunction
-  ) {
-    const { userId, meetId } = req.params;
-    try {
-      await this.repo.deleteMeet(userId, meetId);
-      res.sendStatus(200);
-    } catch (error) {
-      next(error);
+    const match = /\/(saved|joined)-meets\//.exec(url);
+    let meetType = match ? match[1] : null;
+    meetType += 'Meets';
+
+    if (meetType && method) {
+      try {
+        const user = await this.repo.manageMeet(
+          userId,
+          meetId,
+          method as Method,
+          meetType as MeetType
+        );
+        res.status(200).json(user);
+      } catch (error) {
+        next(error);
+      }
     }
   }
 

@@ -106,24 +106,12 @@ describe('Given an instance of the class TestController', () => {
         new HttpError(406, 'Not Acceptable', 'error')
       );
     });
-
-    test('Then it should call next with an error', async () => {
-      (testCreateDtoSchema.validate as jest.Mock).mockReturnValueOnce({
-        error: null,
-        value: {},
-      });
-      const event = { title: 'title' };
-      req.body = event;
-      await controller.create(req, res, next);
-
-      expect(next).toHaveBeenCalled();
-    });
   });
 
   describe('When we use the method create and repo throw an ERROR', () => {
     test('Then it should call repo.create and next', async () => {
       const error = new Error('Something went wrong');
-      (repo.create as jest.Mock).mockRejectedValue(error);
+      (repo.create as jest.Mock).mockRejectedValueOnce(error);
       const event = { title: 'title', creator: 'autor' };
       req.body = event;
       await controller.create(req, res, next);

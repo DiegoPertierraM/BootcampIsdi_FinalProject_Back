@@ -22,8 +22,7 @@ describe('Given a instance of the class UsersController', () => {
     create: jest.fn(),
     update: jest.fn(),
     delete: jest.fn(),
-    saveMeet: jest.fn(),
-    deleteMeet: jest.fn(),
+    manageMeet: jest.fn(),
     addFriend: jest.fn(),
     getFriends: jest.fn(),
   } as unknown as UsersRepo;
@@ -34,6 +33,9 @@ describe('Given a instance of the class UsersController', () => {
     status: jest.fn().mockReturnThis(),
   } as unknown as Response;
   const next = jest.fn();
+  const mockUserId = '1';
+  const mockMeetId = '2';
+  const mockFriendId = '2';
 
   Auth.hash = jest.fn().mockResolvedValue('hashedPassword');
 
@@ -168,89 +170,46 @@ describe('Given a instance of the class UsersController', () => {
     });
   });
 
-  describe('When we use the method saveMeet', () => {
-    test('Then it should call repo.saveMeet with correct parameters', async () => {
-      const mockUserId = '1';
-      const mockMeetId = '2';
+  describe('When we use the method manageMeet', () => {
+    test('Then it should call repo.manageMeet with correct parameters', async () => {
       const req = {
         params: { userId: mockUserId, meetId: mockMeetId },
+        method: 'post',
+        url: '/users/clw6935px0000i5tn5f2wf44m/saved-meets/clw6a0nhi0002i5tn3b6zv58',
       } as unknown as Request<{ userId: string; meetId: string }>;
-      const res = { sendStatus: jest.fn() } as unknown as Response;
-      const next = jest.fn();
 
-      (repo.saveMeet as jest.Mock).mockResolvedValueOnce({});
+      (repo.manageMeet as jest.Mock).mockResolvedValueOnce({});
 
-      await controller.saveMeet(req, res, next);
+      await controller.manageMeet(req, res, next);
 
-      expect(repo.saveMeet).toHaveBeenCalledWith(mockUserId, mockMeetId);
-      expect(res.sendStatus).toHaveBeenCalledWith(200);
+      expect(repo.manageMeet).toHaveBeenCalledWith(
+        mockUserId,
+        mockMeetId,
+        'post',
+        'savedMeets'
+      );
+      expect(res.status).toHaveBeenCalledWith(200);
     });
 
     test('Then it should call next with an error if an error occurs', async () => {
-      const mockUserId = '1';
-      const mockMeetId = '2';
       const req = {
         params: { userId: mockUserId, meetId: mockMeetId },
+        method: 'post',
+        url: '/users/clw6935px0000i5tn5f2wf44m/example-meets/clw6a0nhi0002i5tn3b6zv58',
       } as unknown as Request<{
         userId: string;
         meetId: string;
       }>;
-      const res = { sendStatus: jest.fn() } as unknown as Response;
-      const next = jest.fn();
 
-      (repo.saveMeet as jest.Mock).mockRejectedValueOnce(
-        new Error('Failed to save meet')
+      (repo.manageMeet as jest.Mock).mockRejectedValueOnce(
+        new Error('Failed to manage meet')
       );
 
-      await controller.saveMeet(req, res, next);
+      await controller.manageMeet(req, res, next);
 
       expect(next).toHaveBeenCalledWith(
         expect.objectContaining({
-          message: 'Failed to save meet',
-        })
-      );
-    });
-  });
-
-  describe('When we use the method deleteMeet', () => {
-    test('Then it should call repo.deleteMeet with correct parameters', async () => {
-      const mockUserId = '1';
-      const mockMeetId = '2';
-      const req = {
-        params: { userId: mockUserId, meetId: mockMeetId },
-      } as unknown as Request<{ userId: string; meetId: string }>;
-      const res = { sendStatus: jest.fn() } as unknown as Response;
-      const next = jest.fn();
-
-      (repo.deleteMeet as jest.Mock).mockResolvedValueOnce({});
-
-      await controller.deleteMeet(req, res, next);
-
-      expect(repo.deleteMeet).toHaveBeenCalledWith(mockUserId, mockMeetId);
-      expect(res.sendStatus).toHaveBeenCalledWith(200);
-    });
-
-    test('Then it should call next with an error if an error occurs', async () => {
-      const mockUserId = '1';
-      const mockMeetId = '2';
-      const req = {
-        params: { userId: mockUserId, meetId: mockMeetId },
-      } as unknown as Request<{
-        userId: string;
-        meetId: string;
-      }>;
-      const res = { sendStatus: jest.fn() } as unknown as Response;
-      const next = jest.fn();
-
-      (repo.deleteMeet as jest.Mock).mockRejectedValueOnce(
-        new Error('Failed to delete meet')
-      );
-
-      await controller.deleteMeet(req, res, next);
-
-      expect(next).toHaveBeenCalledWith(
-        expect.objectContaining({
-          message: 'Failed to delete meet',
+          message: 'Failed to manage meet',
         })
       );
     });
@@ -258,13 +217,13 @@ describe('Given a instance of the class UsersController', () => {
 
   describe('When we use the method addFriend', () => {
     test('Then it should call repo.addFriend with correct parameters', async () => {
-      const mockUserId = '1';
-      const mockFriendId = '2';
+      const res = {
+        json: jest.fn(),
+        sendStatus: jest.fn().mockReturnThis(),
+      } as unknown as Response;
       const req = {
         params: { userId: mockUserId, friendId: mockFriendId },
       } as unknown as Request<{ userId: string; friendId: string }>;
-      const res = { sendStatus: jest.fn() } as unknown as Response;
-      const next = jest.fn();
 
       (repo.addFriend as jest.Mock).mockResolvedValueOnce({});
 
@@ -275,16 +234,12 @@ describe('Given a instance of the class UsersController', () => {
     });
 
     test('Then it should call next with an error if an error occurs', async () => {
-      const mockUserId = '1';
-      const mockFriendId = '2';
       const req = {
         params: { userId: mockUserId, friendId: mockFriendId },
       } as unknown as Request<{
         userId: string;
         friendId: string;
       }>;
-      const res = { sendStatus: jest.fn() } as unknown as Response;
-      const next = jest.fn();
 
       (repo.addFriend as jest.Mock).mockRejectedValueOnce(
         new Error('Failed to add friend')
@@ -302,13 +257,10 @@ describe('Given a instance of the class UsersController', () => {
 
   describe('When we use the method getFriends', () => {
     test('Then it should call repo.getFriends with correct parameters', async () => {
-      const mockUserId = '1';
       const req = { params: { userId: mockUserId } } as unknown as Request<{
         userId: string;
         friendId: string;
       }>;
-      const res = { json: jest.fn() } as unknown as Response;
-      const next = jest.fn();
       const mockFriends = [
         { id: '2', username: 'friend1' },
         { id: '3', username: 'friend2' },

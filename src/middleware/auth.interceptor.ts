@@ -17,7 +17,6 @@ export class AuthInterceptor {
 
     const data = req.get('Authorization');
     const error = new HttpError(498, ' Token expired/invalid', 'Token invalid');
-
     if (!data?.startsWith('Bearer ')) {
       next(error);
       return;

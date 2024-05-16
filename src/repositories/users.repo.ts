@@ -1,4 +1,4 @@
-import { type PrismaClient } from '@prisma/client';
+import { type Prisma, type PrismaClient } from '@prisma/client';
 import createDebug from 'debug';
 import { HttpError } from '../middleware/errors.middleware.js';
 import {
@@ -152,21 +152,25 @@ export class UsersRepo implements Repo<User, UserCreateDto> {
     });
   }
 
-  async saveMeet(userId: string, meetId: string) {
-    console.log('Saving meet:', meetId, 'for user:', userId);
-    return this.prisma.user.update({
-      where: { id: userId },
-      data: { savedMeets: { connect: { id: meetId } } },
-      include: { savedMeets: true },
-    });
-  }
+  async manageMeet(
+    userId: string,
+    meetId: string,
+    operation: string,
+    meetType: 'savedMeets' | 'joinedMeets'
+  ) {
+    const data: Prisma.UserUpdateInput = {};
+    if (operation === 'POST') {
+      data[meetType] = { connect: { id: meetId } };
+    } else if (operation === 'DELETE') {
+      data[meetType] = { disconnect: { id: meetId } };
+    } else {
+      throw new Error('Operation unknown');
+    }
 
-  async deleteMeet(userId: string, meetId: string) {
-    console.log('Deleting meet:', meetId, 'for user:', userId);
     return this.prisma.user.update({
       where: { id: userId },
-      data: { savedMeets: { disconnect: { id: meetId } } },
-      include: { savedMeets: true },
+      data,
+      include: { [meetType]: true },
     });
   }
 
