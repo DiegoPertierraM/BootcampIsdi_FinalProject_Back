@@ -17,3 +17,12 @@ export type WithLoginRepo<T, C> = Repo<T, C> & {
   addFriend(userId: string, friendId: string): Promise<Partial<T>>;
   getFriends(userId: string): Promise<Partial<T[]>>;
 };
+
+export type MeetRepo<T, C> = {
+  readAll(): Promise<T[]>;
+  readById(id: string): Promise<T>;
+  create(data: C): Promise<T>;
+  update(id: string, data: Partial<C>): Promise<T>;
+  delete(id: string): Promise<T>;
+  searchByTitle(title: string): Promise<Partial<T[]>>;
+};

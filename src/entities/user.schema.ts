@@ -7,18 +7,17 @@ export const userCreateDtoSchema = Joi.object<UserCreateDto>({
   password: Joi.string().required(),
   avatar: Joi.string(),
   location: Joi.string().required(),
-  birthDateString: Joi.string().required(),
+  birthDate: Joi.date().required(),
   gender: Joi.string().required(),
   bio: Joi.string().default(''),
 });
 
 export const userUpdateDtoSchema = Joi.object<UserCreateDto>({
-  username: Joi.string(),
-  email: Joi.string().email(),
-  password: Joi.string(),
-  avatar: Joi.string(),
-  location: Joi.string(),
-  birthDateString: Joi.string(),
-  gender: Joi.string(),
-  bio: Joi.string(),
-});
+  username: Joi.string().optional(),
+  email: Joi.string().optional(),
+  password: Joi.string().optional(),
+  avatar: Joi.string().optional(),
+  location: Joi.string().optional(),
+  birthDate: Joi.date().optional(),
+  bio: Joi.string().optional(),
+}).min(1);
