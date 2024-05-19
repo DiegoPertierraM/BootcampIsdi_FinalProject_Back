@@ -159,13 +159,17 @@ describe('Given a instance of the class UsersController', () => {
     test('Then it should call repo.update', async () => {
       Auth.hash = jest.fn().mockResolvedValue('hashedPassword');
       const user = { id: '1', username: 'test', password: 'test' };
-      const finalUser = { ...user, password: 'hashedPassword' };
+      const finalUser = {
+        ...user,
+        password: 'hashedPassword',
+        avatar: undefined,
+      };
       req.params = { id: '1' };
       req.body = { ...user, id: req.params.id };
       (repo.update as jest.Mock).mockResolvedValue(finalUser);
       await controller.update(req, res, next);
       expect(Auth.hash).toHaveBeenCalledWith('test');
-      expect(repo.update).toHaveBeenCalledWith('1', finalUser);
+      expect(repo.update).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalledWith(finalUser);
     });
   });

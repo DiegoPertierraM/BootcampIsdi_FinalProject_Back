@@ -18,6 +18,7 @@ const select = {
       email: true,
       birthDate: true,
       role: true,
+      avatar: true,
     },
   },
   attendees: {
@@ -26,6 +27,7 @@ const select = {
       email: true,
       birthDate: true,
       role: true,
+      avatar: true,
     },
   },
 };
@@ -93,6 +95,18 @@ export class MeetsRepo {
 
     return this.prisma.meet.delete({
       where: { id },
+      select,
+    });
+  }
+
+  async searchByTitle(title: string) {
+    return this.prisma.meet.findMany({
+      where: {
+        title: {
+          contains: title,
+          mode: 'insensitive',
+        },
+      },
       select,
     });
   }

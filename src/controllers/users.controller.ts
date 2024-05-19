@@ -1,7 +1,7 @@
 import createDebug from 'debug';
 import { type NextFunction, type Request, type Response } from 'express';
 import { BaseController } from './base.controller.js';
-import { type User, type UserCreateDto } from '../entities/user';
+import { UserUpdateDto, type User, type UserCreateDto } from '../entities/user';
 import {
   userCreateDtoSchema,
   userUpdateDtoSchema,
@@ -87,9 +87,33 @@ export class UsersController extends BaseController<User, UserCreateDto> {
   }
 
   async update(req: Request, res: Response, next: NextFunction) {
+    const allowedFields = [
+      'username',
+      'email',
+      'password',
+      'avatar',
+      'location',
+      'birthDate',
+      'bio',
+    ];
+
+    const filteredBody: Partial<User> = {};
+
+    Object.keys(req.body as User).forEach((key) => {
+      if (allowedFields.includes(key)) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        filteredBody[key as keyof Partial<User>] = req.body[key as keyof User];
+      }
+    });
+
+    req.body = filteredBody;
+
     if (req.body.password && typeof req.body.password === 'string') {
       req.body.password = await Auth.hash(req.body.password as string);
     }
+
+    req.body.avatar = req.body.image as string;
+    delete req.body.image;
 
     await super.update(req, res, next);
   }

@@ -24,9 +24,18 @@ export type UserCreateDto = {
   password: string;
   avatar: string;
   location: string;
-  birthDateString: string;
+  birthDate: Date;
   gender: 'male' | 'female' | 'unspecified';
   bio?: string;
 };
 
-export type UserUpdateDto = Partial<UserCreateDto>;
+export type UserUpdateDto = {
+  username?: string;
+  email?: string;
+  password?: string;
+  avatar?: string;
+  location?: string;
+  birthDate?: Date;
+  gender?: 'male' | 'female' | 'unspecified';
+  bio?: string;
+};

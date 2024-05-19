@@ -110,12 +110,11 @@ export class UsersRepo implements Repo<User, UserCreateDto> {
 
   async create(data: UserCreateDto) {
     console.log('data', data);
-    const { birthDateString, ...rest } = data;
+    const { ...rest } = data;
     const newUser = this.prisma.user.create({
       data: {
         role: 'user',
         bio: '',
-        birthDate: new Date(birthDateString),
         ...rest,
       },
       select,
@@ -131,11 +130,13 @@ export class UsersRepo implements Repo<User, UserCreateDto> {
       throw new HttpError(404, 'Not Found', `User ${id} not found`);
     }
 
-    return this.prisma.user.update({
+    const updatedUser = this.prisma.user.update({
       where: { id },
       data,
       select,
     });
+
+    return updatedUser;
   }
 
   async delete(id: string) {
