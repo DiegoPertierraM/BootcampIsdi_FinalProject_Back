@@ -87,4 +87,13 @@ describe('Given a instance of the class EventsRepo', () => {
       );
     });
   });
+
+  describe('When we use the method searchByTitle', () => {
+    test('Then it should call prisma.findMany', async () => {
+      const title = 'title';
+      const result = await repo.searchByTitle(title);
+      expect(mockPrisma.meet.findMany).toHaveBeenCalled();
+      expect(result).toEqual([]);
+    });
+  });
 });

@@ -12,7 +12,8 @@ describe('Given a instance of the class MeetsController', () => {
   const req = {} as unknown as Request;
   const res = {
     json: jest.fn().mockReturnThis(),
-    status: jest.fn(),
+    status: jest.fn().mockReturnThis(),
+    send: jest.fn().mockReturnThis(),
   } as unknown as Response;
   const next = jest.fn();
 
@@ -72,6 +73,18 @@ describe('Given a instance of the class MeetsController', () => {
       expect(res.json).toHaveBeenCalledWith(mockMeets);
       expect(next).not.toHaveBeenCalled();
     });
+
+    test('should handle errors gracefully', async () => {
+      const req = { query: {} };
+      const error = new Error('Database error');
+
+      (repo.readAll as jest.Mock).mockRejectedValue(error);
+
+      await controller.getAll(req as Request, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith(error);
+    });
   });
 
   describe('When we use the method searchByTitle', () => {
@@ -87,6 +100,29 @@ describe('Given a instance of the class MeetsController', () => {
       expect(repo.searchByTitle).toHaveBeenCalledWith(mockTitle);
       expect(res.json).toHaveBeenCalledWith(mockMeets);
       expect(next).not.toHaveBeenCalled();
+    });
+
+    test('should handle missing title parameter gracefully', async () => {
+      const req = { query: {} };
+
+      await controller.searchByTitle(req as Request, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Title parameter is missing',
+      });
+    });
+
+    test('should handle errors gracefully', async () => {
+      const req = { query: { title: 'test' } };
+      const error = new Error('Database error');
+
+      (repo.searchByTitle as jest.Mock).mockRejectedValue(error);
+
+      await controller.searchByTitle(req as unknown as Request, res, next);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith(error);
     });
   });
 });
