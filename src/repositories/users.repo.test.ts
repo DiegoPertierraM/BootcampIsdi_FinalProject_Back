@@ -1,7 +1,7 @@
 import { type PrismaClient } from '@prisma/client';
 import { UsersRepo } from './users.repo';
 import { HttpError } from '../middleware/errors.middleware';
-import { type UserCreateDto } from '../entities/user';
+import { User, type UserCreateDto } from '../entities/user';
 
 const mockPrisma = {
   user: {
@@ -219,6 +219,54 @@ describe('Given an instance of the class UsersRepo', () => {
       await expect(usersRepo.getFriends(mockUserId)).rejects.toThrow(
         new HttpError(404, 'Not Found', `User ${mockUserId} not found`)
       );
+    });
+  });
+
+  describe('When we call the method deleteFriend', () => {
+    it('should call prisma.user.update with correct parameters', async () => {
+      const mockUserId = '1';
+      const mockFriendId = '2';
+
+      (mockPrisma.user.update as jest.Mock).mockResolvedValueOnce({});
+
+      await usersRepo.deleteFriend(mockUserId, mockFriendId);
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+        data: { friends: { disconnect: { id: mockFriendId } } },
+        include: { friends: true },
+      });
+    });
+  });
+
+  describe('When we call the method searchByUsername', () => {
+    it('should call prisma.user.findMany with correct parameters', async () => {
+      const mockUsername = 'testuser';
+      const mockUsers = [
+        { id: '1', username: 'testuser1' },
+        { id: '2', username: 'testuser2' },
+      ];
+
+      (mockPrisma.user.findMany as jest.Mock).mockResolvedValueOnce(mockUsers);
+
+      const result = await usersRepo.searchByUsername(mockUsername);
+
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            username: {
+              contains: mockUsername,
+              mode: 'insensitive',
+            },
+          },
+          select: expect.objectContaining({
+            id: true,
+            username: true,
+          }),
+        })
+      );
+
+      expect(result).toEqual(mockUsers);
     });
   });
 });

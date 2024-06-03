@@ -14,6 +14,7 @@ describe('Given an instance of the class UsersRouter', () => {
     manageMeet: jest.fn(),
     addFriend: jest.fn(),
     getFriends: jest.fn(),
+    deleteFriend: jest.fn(),
   } as unknown as UsersController;
 
   const authInterceptor = {

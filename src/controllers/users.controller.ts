@@ -18,6 +18,24 @@ export class UsersController extends BaseController<User, UserCreateDto> {
     debug('Instantiated users controller');
   }
 
+  async getAll(req: Request, res: Response, next: NextFunction) {
+    try {
+      const { query } = req;
+      console.log(query);
+
+      let results;
+      if (query && typeof query.username === 'string') {
+        results = await this.repo.searchByUsername(query.username);
+      } else {
+        results = await this.repo.readAll();
+      }
+
+      res.json(results);
+    } catch (error) {
+      res.status(500).send(error);
+    }
+  }
+
   async login(req: Request, res: Response, next: NextFunction) {
     const { email, username, password } = req.body as UserCreateDto;
 
@@ -97,6 +115,12 @@ export class UsersController extends BaseController<User, UserCreateDto> {
       'bio',
     ];
 
+    if (req.body.image) {
+      req.body.avatar = req.body.image as string;
+    }
+
+    delete req.body.image;
+
     const filteredBody: Partial<User> = {};
 
     Object.keys(req.body as User).forEach((key) => {
@@ -112,8 +136,10 @@ export class UsersController extends BaseController<User, UserCreateDto> {
       req.body.password = await Auth.hash(req.body.password as string);
     }
 
-    req.body.avatar = req.body.image as string;
-    delete req.body.image;
+    const dateString = req.body.birthDate as string;
+    const date = new Date(dateString);
+
+    req.body.birthDate = date.toISOString();
 
     await super.update(req, res, next);
   }
@@ -155,8 +181,23 @@ export class UsersController extends BaseController<User, UserCreateDto> {
     const { userId, friendId } = req.params;
 
     try {
-      await this.repo.addFriend(userId, friendId);
-      res.sendStatus(200);
+      const user = await this.repo.addFriend(userId, friendId);
+      res.status(200).json(user);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async deleteFriend(
+    req: Request<{ userId: string; friendId: string }>,
+    res: Response,
+    next: NextFunction
+  ) {
+    const { userId, friendId } = req.params;
+
+    try {
+      const user = await this.repo.deleteFriend(userId, friendId);
+      res.status(200).json(user);
     } catch (error) {
       next(error);
     }
@@ -176,6 +217,21 @@ export class UsersController extends BaseController<User, UserCreateDto> {
       }
 
       res.json(friends);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async searchByUsername(req: Request, res: Response, next: NextFunction) {
+    try {
+      const username = req.query.username as string | undefined;
+
+      if (username === undefined) {
+        return res.status(400).json({ error: 'username parameter is missing' });
+      }
+
+      const users = await this.repo.searchByUsername(username);
+      res.json(users);
     } catch (error) {
       next(error);
     }

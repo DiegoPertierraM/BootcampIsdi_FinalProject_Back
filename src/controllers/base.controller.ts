@@ -3,6 +3,7 @@ import { type Repo } from '../repositories/type.repo';
 import type Joi from 'joi';
 import { type NextFunction, type Request, type Response } from 'express';
 import { HttpError } from '../middleware/errors.middleware.js';
+import { type Meet } from '@prisma/client';
 const debug = createDebug('TFD:base:controller');
 
 export abstract class BaseController<T, C> {
@@ -86,7 +87,7 @@ export abstract class BaseController<T, C> {
     const { id } = req.params;
     try {
       const result = await this.repo.delete(id);
-      res.json(result);
+      res.json(result as Meet);
     } catch (error) {
       next(error);
     }

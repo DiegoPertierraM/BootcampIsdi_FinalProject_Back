@@ -23,6 +23,7 @@ const select = {
     select: {
       username: true,
       email: true,
+      avatar: true,
     },
   },
   joinedMeets: {
@@ -31,6 +32,7 @@ const select = {
       title: true,
       sport: true,
       date: true,
+      description: true,
       location: true,
       image: true,
       attendees: true,
@@ -42,6 +44,7 @@ const select = {
       title: true,
       sport: true,
       date: true,
+      description: true,
       location: true,
       image: true,
       attendees: true,
@@ -53,6 +56,7 @@ const select = {
       title: true,
       sport: true,
       date: true,
+      description: true,
       location: true,
       image: true,
       attendees: true,
@@ -183,6 +187,14 @@ export class UsersRepo implements Repo<User, UserCreateDto> {
     });
   }
 
+  async deleteFriend(userId: string, friendId: string) {
+    return this.prisma.user.update({
+      where: { id: userId },
+      data: { friends: { disconnect: { id: friendId } } },
+      include: { friends: true },
+    });
+  }
+
   async getFriends(userId: string) {
     const user = await this.prisma.user.findUnique({
       where: { id: userId },
@@ -194,5 +206,17 @@ export class UsersRepo implements Repo<User, UserCreateDto> {
     }
 
     return user.friends as unknown as Partial<User[]>;
+  }
+
+  async searchByUsername(username: string) {
+    return this.prisma.user.findMany({
+      where: {
+        username: {
+          contains: username,
+          mode: 'insensitive',
+        },
+      },
+      select,
+    });
   }
 }
