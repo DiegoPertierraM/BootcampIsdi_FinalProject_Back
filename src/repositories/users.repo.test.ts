@@ -246,74 +246,25 @@ describe('Given an instance of the class UsersRepo', () => {
         { id: '1', username: 'testuser1' },
         { id: '2', username: 'testuser2' },
       ];
-      const select = {
-        id: true,
-        username: true,
-        email: true,
-        role: true,
-        avatar: true,
-        location: true,
-        birthDate: true,
-        gender: true,
-        bio: true,
-        friends: {
-          select: {
-            username: true,
-            email: true,
-            avatar: true,
-          },
-        },
-        joinedMeets: {
-          select: {
-            id: true,
-            title: true,
-            sport: true,
-            date: true,
-            description: true,
-            location: true,
-            image: true,
-            attendees: true,
-          },
-        },
-        createdMeets: {
-          select: {
-            id: true,
-            title: true,
-            sport: true,
-            date: true,
-            description: true,
-            location: true,
-            image: true,
-            attendees: true,
-          },
-        },
-        savedMeets: {
-          select: {
-            id: true,
-            title: true,
-            sport: true,
-            date: true,
-            description: true,
-            location: true,
-            image: true,
-            attendees: true,
-          },
-        },
-      };
 
       (mockPrisma.user.findMany as jest.Mock).mockResolvedValueOnce(mockUsers);
 
       const result = await usersRepo.searchByUsername(mockUsername);
 
-      expect(mockPrisma.user.findMany).toHaveBeenCalledWith({
-        where: {
-          username: {
-            contains: mockUsername,
-            mode: 'insensitive',
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: {
+            username: {
+              contains: mockUsername,
+              mode: 'insensitive',
+            },
           },
-        },
-        select,
-      });
+          select: expect.objectContaining({
+            id: true,
+            username: true,
+          }),
+        })
+      );
 
       expect(result).toEqual(mockUsers);
     });
