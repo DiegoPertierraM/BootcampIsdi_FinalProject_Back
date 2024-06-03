@@ -29,7 +29,7 @@ describe('Given a instance of the class UsersController', () => {
 
   const req = {} as unknown as Request;
   const res = {
-    json: jest.fn(),
+    json: jest.fn().mockReturnThis(),
     status: jest.fn().mockReturnThis(),
   } as unknown as Response;
   const next = jest.fn();
@@ -158,7 +158,13 @@ describe('Given a instance of the class UsersController', () => {
   describe('When we use the method update', () => {
     test('Then it should call repo.update', async () => {
       Auth.hash = jest.fn().mockResolvedValue('hashedPassword');
-      const user = { id: '1', username: 'test', password: 'test' };
+      const date = new Date('01-01-1111');
+      const user = {
+        id: '1',
+        username: 'test',
+        password: 'test',
+        birthDate: date,
+      };
       const finalUser = {
         ...user,
         password: 'hashedPassword',
@@ -223,7 +229,7 @@ describe('Given a instance of the class UsersController', () => {
     test('Then it should call repo.addFriend with correct parameters', async () => {
       const res = {
         json: jest.fn(),
-        sendStatus: jest.fn().mockReturnThis(),
+        status: jest.fn().mockReturnThis(),
       } as unknown as Response;
       const req = {
         params: { userId: mockUserId, friendId: mockFriendId },
@@ -234,7 +240,7 @@ describe('Given a instance of the class UsersController', () => {
       await controller.addFriend(req, res, next);
 
       expect(repo.addFriend).toHaveBeenCalledWith(mockUserId, mockFriendId);
-      expect(res.sendStatus).toHaveBeenCalledWith(200);
+      expect(res.status).toHaveBeenCalledWith(200);
     });
 
     test('Then it should call next with an error if an error occurs', async () => {

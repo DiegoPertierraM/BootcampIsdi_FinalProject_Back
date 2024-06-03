@@ -30,6 +30,8 @@ export class UsersRouter {
     this.router.patch(
       '/:id',
       authInterceptor.authentication.bind(authInterceptor),
+      filesInterceptor.singleFile('avatar'),
+      filesInterceptor.cloudinaryUpload.bind(filesInterceptor),
       controller.update.bind(controller)
     );
     this.router.delete(
@@ -66,6 +68,12 @@ export class UsersRouter {
       '/:userId/add-friend/:friendId',
       authInterceptor.authentication.bind(authInterceptor),
       controller.addFriend.bind(controller)
+    );
+
+    this.router.delete(
+      '/:userId/add-friend/:friendId',
+      authInterceptor.authentication.bind(authInterceptor),
+      controller.deleteFriend.bind(controller)
     );
 
     this.router.get(

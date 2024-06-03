@@ -15,7 +15,9 @@ export type WithLoginRepo<T, C> = Repo<T, C> & {
     meetType: 'savedMeets' | 'joinedMeets'
   ): Promise<Partial<T>>;
   addFriend(userId: string, friendId: string): Promise<Partial<T>>;
+  deleteFriend(userId: string, friendId: string): Promise<Partial<T>>;
   getFriends(userId: string): Promise<Partial<T[]>>;
+  searchByUsername(username: string): Promise<Partial<T[]>>;
 };
 
 export type MeetRepo<T, C> = {

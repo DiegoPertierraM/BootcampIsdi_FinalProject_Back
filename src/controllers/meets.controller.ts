@@ -47,11 +47,8 @@ export class MeetsController extends BaseController<Meet, MeetCreateDto> {
   }
 
   async searchByTitle(req: Request, res: Response, next: NextFunction) {
-    console.log('searching');
-    console.log(req.query);
     try {
       const title = req.query.title as string | undefined;
-      console.log(title);
 
       if (title === undefined) {
         return res.status(400).json({ error: 'Title parameter is missing' });
