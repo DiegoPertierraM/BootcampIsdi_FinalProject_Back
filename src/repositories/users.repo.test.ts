@@ -1,7 +1,7 @@
 import { type PrismaClient } from '@prisma/client';
 import { UsersRepo } from './users.repo';
 import { HttpError } from '../middleware/errors.middleware';
-import { type UserCreateDto } from '../entities/user';
+import { User, type UserCreateDto } from '../entities/user';
 
 const mockPrisma = {
   user: {
@@ -219,6 +219,103 @@ describe('Given an instance of the class UsersRepo', () => {
       await expect(usersRepo.getFriends(mockUserId)).rejects.toThrow(
         new HttpError(404, 'Not Found', `User ${mockUserId} not found`)
       );
+    });
+  });
+
+  describe('When we call the method deleteFriend', () => {
+    it('should call prisma.user.update with correct parameters', async () => {
+      const mockUserId = '1';
+      const mockFriendId = '2';
+
+      (mockPrisma.user.update as jest.Mock).mockResolvedValueOnce({});
+
+      await usersRepo.deleteFriend(mockUserId, mockFriendId);
+
+      expect(mockPrisma.user.update).toHaveBeenCalledWith({
+        where: { id: mockUserId },
+        data: { friends: { disconnect: { id: mockFriendId } } },
+        include: { friends: true },
+      });
+    });
+  });
+
+  describe('When we call the method searchByUsername', () => {
+    it('should call prisma.user.findMany with correct parameters', async () => {
+      const mockUsername = 'testuser';
+      const mockUsers = [
+        { id: '1', username: 'testuser1' },
+        { id: '2', username: 'testuser2' },
+      ];
+      const select = {
+        id: true,
+        username: true,
+        email: true,
+        role: true,
+        avatar: true,
+        location: true,
+        birthDate: true,
+        gender: true,
+        bio: true,
+        friends: {
+          select: {
+            username: true,
+            email: true,
+            avatar: true,
+          },
+        },
+        joinedMeets: {
+          select: {
+            id: true,
+            title: true,
+            sport: true,
+            date: true,
+            description: true,
+            location: true,
+            image: true,
+            attendees: true,
+          },
+        },
+        createdMeets: {
+          select: {
+            id: true,
+            title: true,
+            sport: true,
+            date: true,
+            description: true,
+            location: true,
+            image: true,
+            attendees: true,
+          },
+        },
+        savedMeets: {
+          select: {
+            id: true,
+            title: true,
+            sport: true,
+            date: true,
+            description: true,
+            location: true,
+            image: true,
+            attendees: true,
+          },
+        },
+      };
+
+      (mockPrisma.user.findMany as jest.Mock).mockResolvedValueOnce(mockUsers);
+
+      const result = await usersRepo.searchByUsername(mockUsername);
+
+      expect(mockPrisma.user.findMany).toHaveBeenCalledWith({
+        where: {
+          username: {
+            contains: mockUsername,
+            mode: 'insensitive',
+          },
+        },
+        select,
+      });
+
+      expect(result).toEqual(mockUsers);
     });
   });
 });

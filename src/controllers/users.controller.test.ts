@@ -24,13 +24,16 @@ describe('Given a instance of the class UsersController', () => {
     delete: jest.fn(),
     manageMeet: jest.fn(),
     addFriend: jest.fn(),
+    deleteFriend: jest.fn(),
     getFriends: jest.fn(),
+    searchByUsername: jest.fn(),
   } as unknown as UsersRepo;
 
   const req = {} as unknown as Request;
   const res = {
     json: jest.fn().mockReturnThis(),
     status: jest.fn().mockReturnThis(),
+    send: jest.fn().mockReturnThis(),
   } as unknown as Response;
   const next = jest.fn();
   const mockUserId = '1';
@@ -42,6 +45,47 @@ describe('Given a instance of the class UsersController', () => {
   const controller = new UsersController(repo);
   test('Then it should be instance of the class', () => {
     expect(controller).toBeInstanceOf(UsersController);
+  });
+
+  describe('When we use the method getAll', () => {
+    describe('And no username is provided', () => {
+      test('Then it should call repo.readAll and res.json with the results', async () => {
+        req.query = {};
+        const mockUsers = [{ id: '1', username: 'test' }];
+        (repo.readAll as jest.Mock).mockResolvedValue(mockUsers);
+
+        await controller.getAll(req, res, next);
+
+        expect(repo.readAll).toHaveBeenCalled();
+        expect(res.json).toHaveBeenCalledWith(mockUsers);
+      });
+    });
+
+    describe('And a username is provided', () => {
+      test('Then it should call repo.searchByUsername and res.json with the results', async () => {
+        req.query = { username: 'test' };
+        const mockUsers = [{ id: '1', username: 'test' }];
+        (repo.searchByUsername as jest.Mock).mockResolvedValue(mockUsers);
+
+        await controller.getAll(req, res, next);
+
+        expect(repo.searchByUsername).toHaveBeenCalledWith('test');
+        expect(res.json).toHaveBeenCalledWith(mockUsers);
+      });
+    });
+
+    describe('And an error is thrown', () => {
+      test('Then it should call next with an error', async () => {
+        req.query = {};
+        (repo.readAll as jest.Mock).mockRejectedValue(
+          new Error('Failed to read all users')
+        );
+
+        await controller.getAll(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(500);
+      });
+    });
   });
 
   describe('When we use the method login', () => {
@@ -290,7 +334,10 @@ describe('Given a instance of the class UsersController', () => {
         userId: string;
         friendId: string;
       }>;
-      const res = { json: jest.fn() } as unknown as Response;
+      const res = {
+        json: jest.fn(),
+        send: jest.fn().mockReturnThis(),
+      } as unknown as Response;
       const next = jest.fn();
 
       (repo.getFriends as jest.Mock).mockResolvedValueOnce(null);
@@ -302,6 +349,83 @@ describe('Given a instance of the class UsersController', () => {
           message: `User ${mockUserId} not found`,
         })
       );
+    });
+  });
+
+  describe('When we use the method deleteFriend', () => {
+    test('Then it should call repo.deleteFriend with correct parameters', async () => {
+      const req = {
+        params: { userId: mockUserId, friendId: mockFriendId },
+      } as unknown as Request<{ userId: string; friendId: string }>;
+
+      (repo.deleteFriend as jest.Mock).mockResolvedValueOnce({});
+
+      await controller.deleteFriend(req, res, next);
+
+      expect(repo.deleteFriend).toHaveBeenCalledWith(mockUserId, mockFriendId);
+      expect(res.status).toHaveBeenCalledWith(200);
+    });
+
+    test('Then it should call next with an error if an error occurs', async () => {
+      const req = {
+        params: { userId: mockUserId, friendId: mockFriendId },
+      } as unknown as Request<{
+        userId: string;
+        friendId: string;
+      }>;
+
+      (repo.deleteFriend as jest.Mock).mockRejectedValueOnce(
+        new Error('Failed to delete friend')
+      );
+
+      await controller.deleteFriend(req, res, next);
+
+      expect(next).toHaveBeenCalledWith(
+        expect.objectContaining({
+          message: 'Failed to delete friend',
+        })
+      );
+    });
+  });
+
+  describe('When we use the method searchByUsername', () => {
+    describe('And the username is provided', () => {
+      test('Then it should call repo.searchByUsername and res.json with the results', async () => {
+        req.query = { username: 'test' };
+        const mockUsers = [{ id: '1', username: 'test' }];
+        (repo.searchByUsername as jest.Mock).mockResolvedValue(mockUsers);
+
+        await controller.searchByUsername(req, res, next);
+
+        expect(repo.searchByUsername).toHaveBeenCalledWith('test');
+        expect(res.json).toHaveBeenCalledWith(mockUsers);
+      });
+    });
+
+    describe('And the username is not provided', () => {
+      test('Then it should respond with status 400 and an error message', async () => {
+        req.query = {};
+
+        await controller.searchByUsername(req, res, next);
+
+        expect(res.status).toHaveBeenCalledWith(400);
+        expect(res.json).toHaveBeenCalledWith({
+          error: 'username parameter is missing',
+        });
+      });
+    });
+
+    describe('And an error is thrown', () => {
+      test('Then it should call next with an error', async () => {
+        req.query = { username: 'test' };
+        (repo.searchByUsername as jest.Mock).mockRejectedValue(
+          new Error('Failed to search by username')
+        );
+
+        await controller.searchByUsername(req, res, next);
+
+        expect(next).toHaveBeenCalledWith(expect.any(Error));
+      });
     });
   });
 });
